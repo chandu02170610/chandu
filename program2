@@ -1,0 +1,112 @@
+import java.util.Scanner;
+import java.util.InputMismatchException;
+
+public class Calculator {
+
+    // Method for addition
+    static double add(double num1, double num2) {
+        return num1 + num2;
+    }
+
+    // Method for subtraction
+    static double subtract(double num1, double num2) {
+        return num1 - num2;
+    }
+
+    // Method for multiplication
+    static double multiply(double num1, double num2) {
+        return num1 * num2;
+    }
+
+    // Method for division
+    static double divide(double num1, double num2) {
+        if (num2 == 0) {
+            System.out.println("Error: Cannot divide by zero.");
+            return Double.NaN; // Return NaN (Not a Number) if division by zero
+        }
+        return num1 / num2;
+    }
+
+    // Display the menu
+    static void displayMenu() {
+        System.out.println("\nCalculator Menu:");
+        System.out.println("1. Add");
+        System.out.println("2. Subtract");
+        System.out.println("3. Multiply");
+        System.out.println("4. Divide");
+        System.out.println("5. Exit");
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        boolean continueRunning = true;
+
+        while (continueRunning) {
+            displayMenu();
+            int choice = 0;
+
+            // Input validation for menu choice
+            boolean validChoice = false;
+            while (!validChoice) {
+                try {
+                    System.out.print("Enter your choice (1-5): ");
+                    choice = sc.nextInt();
+
+                    if (choice < 1 || choice > 5) {
+                        System.out.println("Invalid choice! Please select a number between 1 and 5.");
+                    } else {
+                        validChoice = true;
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input! Please enter a valid number.");
+                    sc.next(); // Clear the invalid input
+                }
+            }
+
+            if (choice == 5) {
+                System.out.println("Exiting the calculator.");
+                continueRunning = false;
+            } else {
+                double num1 = 0, num2 = 0;
+
+                // Input validation for numbers
+                boolean validInput = false;
+                while (!validInput) {
+                    try {
+                        System.out.print("Enter the first number: ");
+                        num1 = sc.nextDouble();
+
+                        System.out.print("Enter the second number: ");
+                        num2 = sc.nextDouble();
+
+                        validInput = true;
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid number! Please enter valid numeric values.");
+                        sc.next(); // Clear the invalid input
+                    }
+                }
+
+                // Perform the operation based on the user's choice
+                switch (choice) {
+                    case 1:
+                        System.out.println("Result: " + add(num1, num2));
+                        break;
+                    case 2:
+                        System.out.println("Result: " + subtract(num1, num2));
+                        break;
+                    case 3:
+                        System.out.println("Result: " + multiply(num1, num2));
+                        break;
+                    case 4:
+                        double result = divide(num1, num2);
+                        if (!Double.isNaN(result)) {
+                            System.out.println("Result: " + result);
+                        }
+                        break;
+                }
+            }
+        }
+
+        sc.close();
+    }
+}
