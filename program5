@@ -1,0 +1,105 @@
+import java.util.Scanner;
+
+public class SubnetCalculator {
+
+    // Convert an IP address from string to an integer array
+    public static int[] ipToArray(String ip) {
+        String[] parts = ip.split("\\.");
+        int[] result = new int[4];
+        for (int i = 0; i < 4; i++) {
+            result[i] = Integer.parseInt(parts[i]);
+        }
+        return result;
+    }
+
+    // Convert an integer array to an IP address string
+    public static String arrayToIp(int[] ip) {
+        return ip[0] + "." + ip[1] + "." + ip[2] + "." + ip[3];
+    }
+
+    // Perform a bitwise AND between two IPs
+    public static int[] andOperation(int[] ip1, int[] ip2) {
+        int[] result = new int[4];
+        for (int i = 0; i < 4; i++) {
+            result[i] = ip1[i] & ip2[i];
+        }
+        return result;
+    }
+
+    // Perform a bitwise OR between two IPs
+    public static int[] orOperation(int[] ip1, int[] ip2) {
+        int[] result = new int[4];
+        for (int i = 0; i < 4; i++) {
+            result[i] = ip1[i] | ip2[i];
+        }
+        return result;
+    }
+
+    // Get the network address
+    public static String getNetworkAddress(String ip, String mask) {
+        int[] ipArr = ipToArray(ip);
+        int[] maskArr = ipToArray(mask);
+        int[] networkArr = andOperation(ipArr, maskArr);
+        return arrayToIp(networkArr);
+    }
+
+    // Get the broadcast address
+    public static String getBroadcastAddress(String ip, String mask) {
+        int[] ipArr = ipToArray(ip);
+        int[] maskArr = ipToArray(mask);
+        int[] invertedMaskArr = new int[4];
+        for (int i = 0; i < 4; i++) {
+            invertedMaskArr[i] = ~maskArr[i] & 0xFF; // Invert the mask and keep in the 8-bit range
+        }
+        int[] broadcastArr = orOperation(ipArr, invertedMaskArr);
+        return arrayToIp(broadcastArr);
+    }
+
+    // Get the range of valid host addresses
+    public static String getHostRange(String network, String broadcast) {
+        int[] networkArr = ipToArray(network);
+        int[] broadcastArr = ipToArray(broadcast);
+
+        // The first host IP is one greater than the network address
+        networkArr[3] += 1;
+
+        // The last host IP is one less than the broadcast address
+        broadcastArr[3] -= 1;
+
+        String firstHost = arrayToIp(networkArr);
+        String lastHost = arrayToIp(broadcastArr);
+
+        return firstHost + " - " + lastHost;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Input the IP address and subnet mask
+        System.out.print("Enter IP address: ");
+        String ip = sc.nextLine();
+
+        System.out.print("Enter subnet mask: ");
+        String mask = sc.nextLine();
+
+        // Validate the IP address and subnet mask format (basic validation)
+        if (!ip.matches("([0-9]{1,3}\\.){3}[0-9]{1,3}") || !mask.matches("([0-9]{1,3}\\.){3}[0-9]{1,3}")) {
+            System.out.println("Invalid IP address or subnet mask format.");
+            return;
+        }
+
+        // Calculate and display the network address
+        String networkAddress = getNetworkAddress(ip, mask);
+        System.out.println("Network Address: " + networkAddress);
+
+        // Calculate and display the broadcast address
+        String broadcastAddress = getBroadcastAddress(ip, mask);
+        System.out.println("Broadcast Address: " + broadcastAddress);
+
+        // Calculate and display the host address range
+        String hostRange = getHostRange(networkAddress, broadcastAddress);
+        System.out.println("Host IP Range: " + hostRange);
+
+        sc.close();
+    }
+}
