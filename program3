@@ -1,0 +1,57 @@
+import java.util.Scanner;
+
+public class CRC32Calculator {
+
+    // Polynomial used for CRC-32 (standard used in Ethernet, ZIP, etc.)
+    static final int POLYNOMIAL = 0x04C11DB7;
+
+    // Method to calculate the CRC-32
+    static int calculateCRC(String data) {
+        // Initialize CRC value to 0xFFFFFFFF (this is often the initial value used in CRC-32)
+        int crc = 0xFFFFFFFF;
+
+        // Process each byte in the data
+        for (int i = 0; i < data.length(); i++) {
+            int byteValue = data.charAt(i);
+            crc ^= (byteValue << 24);  // Align the byte at the left-most position
+
+            // Perform the polynomial division (bitwise operations)
+            for (int j = 0; j < 8; j++) {
+                if ((crc & 0x80000000) != 0) {
+                    crc = (crc << 1) ^ POLYNOMIAL;  // Shift and XOR if MSB is 1
+                } else {
+                    crc <<= 1;  // Just shift if MSB is 0
+                }
+            }
+        }
+
+        // Final XOR with 0xFFFFFFFF (this is often the final XOR used in CRC-32)
+        return crc ^ 0xFFFFFFFF;
+    }
+
+    // Method to convert a string to a binary representation
+    static String toBinaryString(int crc) {
+        StringBuilder sb = new StringBuilder(Integer.toBinaryString(crc));
+        while (sb.length() < 32) {
+            sb.insert(0, "0");  // Pad with leading zeros to make it 32 bits
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Read input data from the user
+        System.out.print("Enter the data string for CRC calculation: ");
+        String data = sc.nextLine();
+
+        // Calculate the CRC-32 for the input data
+        int crcValue = calculateCRC(data);
+
+        // Display the CRC value in both hexadecimal and binary format
+        System.out.println("\nCRC-32 (Hex): " + Integer.toHexString(crcValue).toUpperCase());
+        System.out.println("CRC-32 (Binary): " + toBinaryString(crcValue));
+
+        sc.close();
+    }
+}
